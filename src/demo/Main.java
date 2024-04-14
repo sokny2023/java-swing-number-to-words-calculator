@@ -3,7 +3,6 @@ package demo;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -25,7 +24,8 @@ class NumberToWordsCalculator extends JFrame implements ActionListener {
     String result;
     private final JTextField khAnswer;
     private final JTextField engAnswer;
-    private final JTextField exchageAnswer;
+    private final JTextField convertToDollarAnswer;
+    String selectOption;
 
     public NumberToWordsCalculator() {
         // Set layout and frame properties
@@ -60,13 +60,11 @@ class NumberToWordsCalculator extends JFrame implements ActionListener {
         group.add(option2);
         group.add(option3);
 
-        // Add radio buttons and action listeners to the frame
-        add(option1);
-        add(option2);
-        add(option3);
-        option1.addActionListener(this);
-        option2.addActionListener(this);
-        option3.addActionListener(this);
+        // Add action listeners to the radio buttons
+        option1.addActionListener(e -> actionOption(e));
+        option2.addActionListener(e -> actionOption(e));
+        option3.addActionListener(e -> actionOption(e));
+
 
         // Label to display the selected option
         selectedOptionLabel = new JLabel("Selected Option: Words");
@@ -95,13 +93,13 @@ class NumberToWordsCalculator extends JFrame implements ActionListener {
         add(calculateBtn);
 
         // answer label
-        JLabel englishAnswer = new JLabel("Read on English:");
-        englishAnswer.setBounds(40, 450, 100, 30);
-        add(englishAnswer);
-
         JLabel khmerAnswer = new JLabel("អានជាភាសាខ្មែរ:");
-        khmerAnswer.setBounds(40,500, 100, 30);
+        khmerAnswer.setBounds(40,450, 100, 30);
         add(khmerAnswer);
+
+        JLabel englishAnswer = new JLabel("Read on English:");
+        englishAnswer.setBounds(40, 500, 100, 30);
+        add(englishAnswer);
 
         JLabel exchangeAnswer = new JLabel("Convert to Dollar:");
         exchangeAnswer.setBounds(40,550, 150, 30);
@@ -109,16 +107,16 @@ class NumberToWordsCalculator extends JFrame implements ActionListener {
 
         // answer text field
         khAnswer = new JTextField();
-        khAnswer.setBounds(160,450, 280, 30);
+        khAnswer.setBounds(160,450, 300, 30);
         add(khAnswer);
 
         engAnswer = new JTextField();
-        engAnswer.setBounds(160, 500, 280, 30);
+        engAnswer.setBounds(160, 500, 300, 30);
         add(engAnswer);
 
-        exchageAnswer = new JTextField();
-        exchageAnswer.setBounds(160, 550, 280, 30);
-        add(exchageAnswer);
+        convertToDollarAnswer = new JTextField();
+        convertToDollarAnswer.setBounds(160, 550, 300, 30);
+        add(convertToDollarAnswer);
 
         // events
         calculateBtn.addActionListener(new ActionListener() {
@@ -131,6 +129,7 @@ class NumberToWordsCalculator extends JFrame implements ActionListener {
         setVisible(true);
     }
 
+
     private void processCalculate(){
         //JOptionPane.showMessageDialog(this,"Hello Hello");
         String inputMoney = moneyInput.getText();
@@ -141,23 +140,29 @@ class NumberToWordsCalculator extends JFrame implements ActionListener {
         try {
             int amount = Integer.parseInt(inputMoney);
             result = String.valueOf(amount);
-            String amountInWordsEnglish = readInEnglish(amount) + " Riel";
-            /*String amountInWordsKhmer = readInKhmer(amount) + " រៀល";
-            String resultMoney = resultMoney(amount) + "$";
-            //resultOutputField.setText(" "+inputText + " KHR");
-            outputReadEnglish.setText(amountInWordsEnglish);
-            outputReadKhmer.setText(amountInWordsKhmer);
-            outputResultMoney.setText(resultMoney);*/
+            String wordsEnglish = readInEnglish(amount) + " Riel";
+            String wordsKhmer = readInKhmer(amount) + " រៀល";
+            String wordConvertToDollar =  covertToDollar(amount) + "$";
 
-            /*BufferedWriter writer = new BufferedWriter(new FileWriter("money_inputs.txt", true));
-            writer.append(inputText).append(" KHR - ").append((char) amount).append("\n");
-            writer.close();*/
+            String resultEnglish = null;
+            String resultKhmer = null;
+            String resultDollar = null;
+
+            if(selectOption.equalsIgnoreCase("op1")){
+                resultEnglish = wordsEnglish;
+                resultKhmer = wordsKhmer;
+                resultDollar = wordConvertToDollar;
+            }
+
+            engAnswer.setText(resultEnglish);
+            khAnswer.setText(resultKhmer);
+            convertToDollarAnswer.setText(resultDollar+ " "+selectOption);
+
 
             BufferedWriter writer = new BufferedWriter(new FileWriter("money_file.txt", true));
             writer.write(inputMoney + "\n");
             writer.close();
 
-            answerArea.setText("Answer: "+amountInWordsEnglish);
 
             //JOptionPane.showMessageDialog(this, "Data stored successfully: " + inputMoney + " KHR - " + amount, "Success", JOptionPane.INFORMATION_MESSAGE);
         } catch (NumberFormatException | IOException exception) {
@@ -200,14 +205,85 @@ class NumberToWordsCalculator extends JFrame implements ActionListener {
 
     }
 
+    private String readInKhmer(int number) {
+        String[] units = {"", "មួយ", "ពីរ", "បី", "បួន", "ប្រាំ", "ប្រាំមួយ", "ប្រាំពីរ", "ប្រាំបី", "ប្រាំបួន"};
+        String[] tens = {"", "ដប់", "ម្ភៃ", "សាមសិប", "សែសិប", "ហាសិប", "ហុកសិប", "ចិតសិប", "ប៉ែតសិប", "កៅសិប"};
+        String hundred = "រយ";
+        String thousand = "ពាន់";
+        String tenThousand = "មុឺន";
+        String hundredThousand = "សែន";
+        String million = "លាន";
+
+        if (number == 0) {
+            return "សូន្យ"; // "Zero" in Khmer
+        }
+
+        String words = "";
+        if (number / 1000000 > 0) {
+            words += units[number / 1000000] + million + " ";
+            number %= 1000000;
+        }
+        if (number / 100000 > 0) {
+            words += readInKhmer(number / 100000) + tenThousand + " ";
+            number %= 100000;
+        }
+        if (number / 10000 > 0) {
+            words += readInKhmer(number / 100000) + hundredThousand + " ";
+            number %= 10000;
+        }
+        if (number / 1000 > 0) {
+            words += readInKhmer(number / 1000) + thousand + " ";
+            number %= 1000;
+        }
+        if (number / 100 > 0) {
+            words += units[number / 100] + hundred + " ";
+            number %= 100;
+        }
+        if (number > 0) {
+            if (number < 10) {
+                words += units[number];
+            } else if (number < 20) {
+                // Handling 11-19, which follows the pattern "ten-one", "ten-two", etc.
+                words += tens[number / 10] + units[number % 10];
+            } else {
+                words += tens[number / 10];
+                if ((number % 10) > 0) {
+                    words += " " + units[number % 10];
+                }
+            }
+        }
+        return words.trim();
+    }
+
+    private Long  covertToDollar(int number){
+        return (long) (number/4000);
+    }
+
+    public void actionOption(ActionEvent e) {
+        JRadioButton selectedRadioButton = (JRadioButton) e.getSource();
+        if (selectedRadioButton == option1) {
+            selectedOptionLabel.setText("Selected Option: Words");
+            selectOption = "op1";
+        } else if (selectedRadioButton == option2) {
+            selectedOptionLabel.setText("Selected Option: Currency");
+            selectOption = "op2";
+        } else if (selectedRadioButton == option3) {
+            selectedOptionLabel.setText("Selected Option: Check Writing");
+            selectOption = "op3";
+        }
+    }
+
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == option1) {
-            selectedOptionLabel.setText("Selected Option: Words");
+            selectedOptionLabel.setText("word"+selectOption);
         } else if (e.getSource() == option2) {
             selectedOptionLabel.setText("Selected Option: Currency");
+            selectOption = "op2";
         } else if (e.getSource() == option3) {
             selectedOptionLabel.setText("Selected Option: Check Writing");
+            selectOption = "op3";
         }
 
         // Handling selections from the JComboBox for letter case
