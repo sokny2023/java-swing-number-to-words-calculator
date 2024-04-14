@@ -69,7 +69,7 @@ class NumberToWordsCalculator extends JFrame implements ActionListener {
         // Label to display the selected option
         selectedOptionLabel = new JLabel("Selected Option: Words");
         selectedOptionLabel.setBounds(100, 250, 200, 30);
-        add(selectedOptionLabel);
+        //add(selectedOptionLabel);
 
         // Label and combo box for letter case selection
         JLabel letterCaseLabel = new JLabel("Letter Case:");
@@ -148,11 +148,11 @@ class NumberToWordsCalculator extends JFrame implements ActionListener {
             String resultKhmer = null;
             String resultDollar = null;
 
-            if(selectOption.equalsIgnoreCase("op1")){
+            //if(selectOption.equalsIgnoreCase("op1")){
                 resultEnglish = wordsEnglish;
                 resultKhmer = wordsKhmer;
                 resultDollar = wordConvertToDollar;
-            }
+            //}
 
             engAnswer.setText(resultEnglish);
             khAnswer.setText(resultKhmer);
@@ -276,7 +276,7 @@ class NumberToWordsCalculator extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == option1) {
+        /*if (e.getSource() == option1) {
             selectedOptionLabel.setText("word"+selectOption);
         } else if (e.getSource() == option2) {
             selectedOptionLabel.setText("Selected Option: Currency");
@@ -284,7 +284,7 @@ class NumberToWordsCalculator extends JFrame implements ActionListener {
         } else if (e.getSource() == option3) {
             selectedOptionLabel.setText("Selected Option: Check Writing");
             selectOption = "op3";
-        }
+        }*/
 
         // Handling selections from the JComboBox for letter case
         if (e.getSource() == letterCaseComboBox) {
