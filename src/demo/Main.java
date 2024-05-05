@@ -20,7 +20,6 @@ class NumberToWordsCalculator extends JFrame implements ActionListener {
     private final ButtonGroup group;
     private final JLabel selectedOptionLabel;
     private final JComboBox<String> letterCaseComboBox;
-    private  JTextArea answerArea;
     String result;
     private final JTextField khAnswer;
     private final JTextField engAnswer;
@@ -61,9 +60,9 @@ class NumberToWordsCalculator extends JFrame implements ActionListener {
         group.add(option3);
 
         // Add action listeners to the radio buttons
-        option1.addActionListener(e -> actionOption(e));
-        option2.addActionListener(e -> actionOption(e));
-        option3.addActionListener(e -> actionOption(e));
+//        option1.addActionListener(e -> actionOption(e));
+//        option2.addActionListener(e -> actionOption(e));
+//        option3.addActionListener(e -> actionOption(e));
 
 
         // Label to display the selected option
@@ -156,7 +155,7 @@ class NumberToWordsCalculator extends JFrame implements ActionListener {
 
             engAnswer.setText(resultEnglish);
             khAnswer.setText(resultKhmer);
-            convertToDollarAnswer.setText(resultDollar+ " "+selectOption);
+            convertToDollarAnswer.setText(resultDollar);
 
 
             BufferedWriter writer = new BufferedWriter(new FileWriter("money_file.txt", true));
